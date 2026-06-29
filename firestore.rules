@@ -1,0 +1,82 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Check if the user is a verified NSTU student
+    function isStudent() {
+      return request.auth != null && 
+             request.auth.token.email != null &&
+             request.auth.token.email.matches('.*@student[.]nstu[.]edu[.]bd');
+    }
+
+    // 1. Authenticated users can read products.
+    // Sellers can update/delete only their own products.
+    match /products/{productId} {
+      allow read: if request.auth != null;
+      allow create: if isStudent();
+      allow update, delete: if isStudent() && resource.data.sellerId == request.auth.uid;
+
+      match /reviews/{reviewId} {
+        allow read, write: if request.auth != null
+          && request.auth.token.email.matches('.*@student\\.nstu\\.edu\\.bd$');
+      }
+    }
+
+    // 2. Users can read/write only their own profile, cart, and wishlist
+    match /users/{userId} {
+      allow read, create, update: if request.auth != null && request.auth.uid == userId && isStudent();
+
+      match /wishlist/{id} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+      match /cart/{id} {
+        allow read, write: if request.auth != null && request.auth.uid == userId;
+      }
+    }
+
+    // Wishlist items fallback collection (assuming global format from wishlist_service)
+    match /wishlistItems/{itemId} {
+      // Allow read/write for own items, or let productService read global items for pricing updates 
+      // (Simplified to authenticated users for dev)
+      allow read, write: if request.auth != null;
+    }
+
+    // 3. Authenticated users can access chats, orders, rentRequests, exchangeRequests, and notifications according to ownership.
+    match /chat_rooms/{chatId} {
+      allow read, write: if request.auth != null && 
+                         (resource == null || request.auth.uid in resource.data.participantIds);
+      
+      match /messages/{messageId} {
+        allow read, write: if request.auth != null;
+      }
+    }
+
+    match /orders/{orderId} {
+      allow read, write: if request.auth != null && 
+                         (resource == null || request.auth.uid == resource.data.buyerId || request.auth.uid == resource.data.sellerId);
+    }
+
+    match /rentRequests/{requestId} {
+      allow read, write: if request.auth != null && 
+                         (resource == null || request.auth.uid == resource.data.renterId || request.auth.uid == resource.data.ownerId);
+    }
+
+    match /exchangeRequests/{requestId} {
+      allow read, write: if request.auth != null && 
+                         (resource == null || request.auth.uid == resource.data.requesterId || request.auth.uid == resource.data.ownerId);
+    }
+
+    // Removed top-level reviews collection since it's a subcollection of products
+
+    match /notifications/{notificationId} {
+      // Allow read/write for user's own notifications
+      allow read, write: if request.auth != null && 
+                         (resource == null || resource.data.userId == request.auth.uid || request.resource.data.userId == request.auth.uid);
+    }
+
+    match /categories/{categoryId} {
+      allow read: if request.auth != null;
+      allow write: if false; // Only admins via backend can write categories
+    }
+  }
+}
