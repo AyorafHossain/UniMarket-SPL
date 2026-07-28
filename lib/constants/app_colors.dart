@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   // Primary colors
-  static const Color primary = Color(0xFF6366F1); // Indigo
-  static const Color secondary = Color(0xFFEC4899); // Pink
+  static const Color primary = Color(0xFF1E3A5F); // Navy Blue
+  static const Color secondary = Color(0xFFD4A017); // Gold
   
   // Background colors
-  static const Color background = Color(0xFFF8FAFC);
-  static const Color white = Colors.white;
+  static const Color background = Color(0xFFF5F7FA); // Light Gray
+  static const Color white = Color(0xFFFFFFFF); // Pure White
   
   // Text colors
-  static const Color textPrimary = Color(0xFF1E293B);
-  static const Color textSecondary = Color(0xFF64748B);
+  static const Color textPrimary = Color(0xFF212121); // Dark Gray
+  static const Color textSecondary = Color(0xFF757575); // Gray
   static const Color textLight = Color(0xFF94A3B8);
   
   // Status colors
-  static const Color success = Color(0xFF10B981);
-  static const Color error = Color(0xFFEF4444);
+  static const Color success = Color(0xFF2E7D32); // Green
+  static const Color error = Color(0xFFD32F2F); // Red
   static const Color warning = Color(0xFFF59E0B);
   
   // Gray scale

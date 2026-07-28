@@ -37,7 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(authProvider.errorMessage ?? 'Login failed'),
-            backgroundColor: Colors.redAccent,
+            backgroundColor: AppColors.error,
           ),
         );
       }
@@ -113,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text('Password reset email sent. Please check your inbox.'),
-                                  backgroundColor: Colors.green,
+                                  backgroundColor: AppColors.success,
                                 ),
                               );
                             }
@@ -202,7 +202,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     'Login to continue using UniMarket',
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.grey,
+                      color: AppColors.textSecondary,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -246,7 +246,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       suffixIcon: IconButton(
                         icon: Icon(
                           _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                          color: Colors.grey,
+                          color: AppColors.textSecondary,
                         ),
                         onPressed: () {
                           setState(() {
@@ -312,15 +312,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   // OR Divider
                   Row(
                     children: [
-                      Expanded(child: Divider(color: Colors.grey.shade300)),
+                      const Expanded(child: Divider(color: AppColors.gray300)),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Text(
                           'OR',
-                          style: TextStyle(color: Colors.grey.shade600, fontWeight: FontWeight.w500),
+                          style: TextStyle(color: AppColors.textSecondary, fontWeight: FontWeight.w500),
                         ),
                       ),
-                      Expanded(child: Divider(color: Colors.grey.shade300)),
+                      const Expanded(child: Divider(color: AppColors.gray300)),
                     ],
                   ),
                   const SizedBox(height: 24),
@@ -334,7 +334,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(ap.errorMessage!),
-                            backgroundColor: Colors.redAccent,
+                            backgroundColor: AppColors.error,
                           ),
                         );
                       }
@@ -346,7 +346,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 12),
-                      side: BorderSide(color: Colors.grey.shade400),
+                      side: const BorderSide(color: AppColors.gray300),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),

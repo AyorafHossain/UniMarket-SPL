@@ -62,11 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
     debugPrint('Home email: ${user?.email}');
     debugPrint('Loading products from collection: products');
     
-    if (user != null) {
-      _productsStream = _productService.getProductsStream();
-    } else {
-      _productsStream = const Stream.empty();
-    }
+    _productsStream = _productService.getProductsStream();
     
     _simulateLoading();
   }

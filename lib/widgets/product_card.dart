@@ -47,8 +47,8 @@ class _ProductCardState extends State<ProductCard> {
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 10,
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 12,
               offset: const Offset(0, 4),
             ),
           ],
@@ -151,9 +151,16 @@ class _ProductCardState extends State<ProductCard> {
                     top: 6,
                     right: 6,
                     child: Container(
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         color: Colors.white,
                         shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.1),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
                         child: StreamBuilder<List<String>>(
                           stream: WishlistService().wishlistIds(),
