@@ -141,17 +141,17 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       const SizedBox(height: 24),
                       // Dropdown to update order status
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           const Text('Change Status:', style: TextStyle(fontWeight: FontWeight.bold)),
-                          SizedBox(
-                            width: 200,
+                          const SizedBox(width: 16),
+                          Expanded(
                             child: DropdownButtonFormField<String>(
+                              isExpanded: true,
                               initialValue: currentStatus,
                               items: _statusOptions.where((s) => s != 'All').map((status) {
                                 return DropdownMenuItem(
                                   value: status,
-                                  child: Text(status.toUpperCase()),
+                                  child: Text(status.toUpperCase(), overflow: TextOverflow.ellipsis),
                                 );
                               }).toList(),
                               onChanged: (val) {
@@ -167,24 +167,27 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       ),
                       const SizedBox(height: 24),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          OutlinedButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text('Close'),
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text('Close'),
+                            ),
                           ),
                           const SizedBox(width: 12),
-                          ElevatedButton(
-                            onPressed: () async {
-                              await _orderService.updateOrderStatus(order.id, currentStatus);
-                              if (context.mounted) {
-                                Navigator.pop(context);
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Order status updated!'), backgroundColor: Colors.green),
-                                );
-                              }
-                            },
-                            child: const Text('Update Status'),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                await _orderService.updateOrderStatus(order.id, currentStatus);
+                                if (context.mounted) {
+                                  Navigator.pop(context);
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Order status updated!'), backgroundColor: Colors.green),
+                                  );
+                                }
+                              },
+                              child: const Text('Update Status', textAlign: TextAlign.center),
+                            ),
                           ),
                         ],
                       ),

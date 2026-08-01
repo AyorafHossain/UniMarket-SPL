@@ -577,6 +577,16 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     )
+                  else if (product.listingType == 'rent')
+                    Text(
+                      '${CurrencyFormatter.format(product.rentPricePerDay)}/day',
+                      style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.primary),
+                    )
+                  else if (product.listingType == 'both')
+                    Text(
+                      '${CurrencyFormatter.format(product.price)} | ${CurrencyFormatter.format(product.rentPricePerDay)}/day',
+                      style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.bold, color: AppColors.primary),
+                    )
                   else
                     Text(
                       CurrencyFormatter.format(product.price),

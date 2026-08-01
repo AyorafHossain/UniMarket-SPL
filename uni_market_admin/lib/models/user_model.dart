@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class UserModel {
   final String id;
   final String name;
@@ -63,9 +65,13 @@ class UserModel {
       phoneNumber: map['phoneNumber'] ?? '',
       profilePic: map['profilePic'] ?? '',
       isOnline: map['isOnline'] ?? false,
-      createdAt: map['createdAt'] != null ? DateTime.tryParse(map['createdAt']) : null,
+      createdAt: map['createdAt'] is Timestamp 
+          ? (map['createdAt'] as Timestamp).toDate() 
+          : (map['createdAt'] != null ? DateTime.tryParse(map['createdAt'].toString()) : null),
       authProvider: map['authProvider'] ?? 'email',
-      lastLoginAt: map['lastLoginAt'] != null ? DateTime.tryParse(map['lastLoginAt']) : null,
+      lastLoginAt: map['lastLoginAt'] is Timestamp 
+          ? (map['lastLoginAt'] as Timestamp).toDate() 
+          : (map['lastLoginAt'] != null ? DateTime.tryParse(map['lastLoginAt'].toString()) : null),
       university: map['university'] ?? 'NSTU',
       role: map['role'] ?? 'student',
       isEmailVerified: map['isEmailVerified'] ?? false,
