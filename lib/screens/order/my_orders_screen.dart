@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import '../../models/order_model.dart';
 import '../../services/order_service.dart';
-import '../../theme/app_colors.dart';
+import '../../constants/app_colors.dart';
 
 class MyOrdersScreen extends StatefulWidget {
   const MyOrdersScreen({Key? key}) : super(key: key);
@@ -79,7 +79,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.shopping_bag_outlined,
-                            size: 64, color: AppColors.gray400),
+                            size: 64, color: Colors.grey.shade400),
                         const SizedBox(height: 16),
                         Text(
                           'No orders yet',
@@ -93,7 +93,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                         Text(
                           'When you buy products, they will appear here.',
                           style: GoogleFonts.inter(
-                            color: AppColors.gray500,
+                            color: AppColors.textSecondary,
                           ),
                         ),
                       ],
@@ -110,7 +110,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                       margin: const EdgeInsets.only(bottom: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
-                        side: const BorderSide(color: AppColors.gray200),
+                        side: BorderSide(color: Colors.grey.shade200),
                       ),
                       elevation: 0,
                       child: Padding(
@@ -133,7 +133,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                                       horizontal: 12, vertical: 6),
                                   decoration: BoxDecoration(
                                     color: _getStatusColor(order.status)
-                                        .withOpacity(0.1),
+                                        .withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: Text(
@@ -165,7 +165,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                                       Text(
                                         '${item['quantity'] ?? 1}x',
                                         style: GoogleFonts.inter(
-                                            color: AppColors.gray500),
+                                            color: AppColors.textSecondary),
                                       ),
                                       const SizedBox(width: 16),
                                       Text(
@@ -183,7 +183,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                                 Text(
                                   DateFormat('MMM dd, yyyy').format(order.createdAt),
                                   style: GoogleFonts.inter(
-                                    color: AppColors.gray500,
+                                    color: AppColors.textSecondary,
                                     fontSize: 14,
                                   ),
                                 ),

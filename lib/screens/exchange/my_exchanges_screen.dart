@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import '../../models/exchange_request_model.dart';
 import '../../services/exchange_service.dart';
-import '../../theme/app_colors.dart';
+import '../../constants/app_colors.dart';
 
 class MyExchangesScreen extends StatefulWidget {
   const MyExchangesScreen({Key? key}) : super(key: key);
@@ -75,7 +75,7 @@ class _MyExchangesScreenState extends State<MyExchangesScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.swap_horiz_outlined,
-                            size: 64, color: AppColors.gray400),
+                            size: 64, color: Colors.grey.shade400),
                         const SizedBox(height: 16),
                         Text(
                           'No exchange requests yet',
@@ -89,7 +89,7 @@ class _MyExchangesScreenState extends State<MyExchangesScreen> {
                         Text(
                           'When you request an exchange, it will appear here.',
                           style: GoogleFonts.inter(
-                            color: AppColors.gray500,
+                            color: AppColors.textSecondary,
                           ),
                         ),
                       ],
@@ -106,7 +106,7 @@ class _MyExchangesScreenState extends State<MyExchangesScreen> {
                       margin: const EdgeInsets.only(bottom: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
-                        side: const BorderSide(color: AppColors.gray200),
+                        side: BorderSide(color: Colors.grey.shade200),
                       ),
                       elevation: 0,
                       child: Padding(
@@ -119,7 +119,7 @@ class _MyExchangesScreenState extends State<MyExchangesScreen> {
                               children: [
                                 Expanded(
                                   child: Text(
-                                    'Requested: ${exchange.requestedProductName}',
+                                    'Requested: ${exchange.productTitle}',
                                     style: GoogleFonts.inter(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 16,
@@ -131,10 +131,10 @@ class _MyExchangesScreenState extends State<MyExchangesScreen> {
                                 Container(
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 12, vertical: 6),
-                                  margin: const EdgeInsets.left(8),
+                                  margin: const EdgeInsets.only(left: 8),
                                   decoration: BoxDecoration(
                                     color: _getStatusColor(exchange.status)
-                                        .withOpacity(0.1),
+                                        .withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: Text(
@@ -158,7 +158,7 @@ class _MyExchangesScreenState extends State<MyExchangesScreen> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              exchange.offeredProductDetails,
+                              exchange.wantedItem,
                               style: GoogleFonts.inter(
                                 color: AppColors.textPrimary,
                               ),
@@ -170,7 +170,7 @@ class _MyExchangesScreenState extends State<MyExchangesScreen> {
                                 Text(
                                   'Date: ${DateFormat('MMM dd, yyyy').format(exchange.createdAt)}',
                                   style: GoogleFonts.inter(
-                                    color: AppColors.gray500,
+                                    color: AppColors.textSecondary,
                                     fontSize: 14,
                                   ),
                                 ),
