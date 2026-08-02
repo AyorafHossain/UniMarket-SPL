@@ -22,7 +22,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
     'paid',
     'failed',
     'cancelled',
-    'completed'
+    'completed',
+    'settled'
   ];
 
   void _showOrderDetails(OrderModel order) {
