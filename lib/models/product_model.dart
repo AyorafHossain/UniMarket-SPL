@@ -31,9 +31,6 @@ class ProductModel {
   final String wantedItem;
   final String exchangeNotes;
   
-  // Admin field
-  final String approvalStatus; // 'pending', 'approved', 'rejected'
-
   // Admin approval fields
   final String approvalStatus; // 'pending', 'approved', 'rejected'
   final String? approvedBy;
