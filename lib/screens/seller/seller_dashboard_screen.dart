@@ -14,6 +14,7 @@ import '../../services/rent_service.dart';
 import '../../models/exchange_request_model.dart';
 import '../../services/exchange_service.dart';
 import 'edit_product_screen.dart';
+import 'seller_orders_screen.dart';
 
 class SellerDashboardScreen extends StatefulWidget {
   const SellerDashboardScreen({super.key});
@@ -283,6 +284,7 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
                               ),
                         if (_sellerId != null) _buildRentRequests(_sellerId!),
                         if (_sellerId != null) _buildExchangeRequests(_sellerId!),
+                        if (_sellerId != null) _buildReceivedOrders(_sellerId!),
                       ],
                     ),
                   ),
@@ -525,6 +527,152 @@ class _SellerDashboardScreenState extends State<SellerDashboardScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildReceivedOrders(String sellerId) {
+    // Filter orders where the seller is involved and it's paid/completed
+    final validStatuses = ['paid', 'success', 'completed', 'verified'];
+    final sellerOrders = _orders.where((order) {
+      if (!validStatuses.contains(order.status.toLowerCase())) return false;
+      return order.items.any((item) => (item['sellerId'] ?? order.sellerId) == sellerId);
+    }).toList();
+
+    final recentOrders = sellerOrders.take(3).toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 32),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text('Orders Received', style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
+            if (sellerOrders.isNotEmpty)
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SellerOrdersScreen(),
+                    ),
+                  );
+                },
+                child: Text('View All', style: GoogleFonts.inter(fontWeight: FontWeight.bold, color: AppColors.primary)),
+              ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        if (sellerOrders.isEmpty)
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24.0),
+              child: Text('No orders received yet.', style: GoogleFonts.inter(color: AppColors.textSecondary)),
+            ),
+          )
+        else
+          ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: recentOrders.length,
+            itemBuilder: (context, index) {
+              final order = recentOrders[index];
+              // Filter items specific to this seller
+              final sellerItems = order.items.where((item) => (item['sellerId'] ?? order.sellerId) == sellerId).toList();
+              
+              return Card(
+                margin: const EdgeInsets.only(bottom: 12),
+                elevation: 0,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: const BorderSide(color: AppColors.gray200)),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              'Order #${order.id.substring(0, 8)}',
+                              style: GoogleFonts.poppins(fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
+                          ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: order.status == 'completed' ? AppColors.success.withValues(alpha: 0.1) : AppColors.primary.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              order.status.toUpperCase(),
+                              style: GoogleFonts.inter(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                color: order.status == 'completed' ? AppColors.success : AppColors.primary,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppColors.background,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.person_outline, size: 16, color: AppColors.textSecondary),
+                                const SizedBox(width: 8),
+                                Expanded(child: Text(order.buyerName.isNotEmpty ? order.buyerName : 'Unknown Buyer', style: GoogleFonts.inter(fontWeight: FontWeight.w600))),
+                              ],
+                            ),
+                            const SizedBox(height: 6),
+                            Row(
+                              children: [
+                                const Icon(Icons.phone_outlined, size: 16, color: AppColors.textSecondary),
+                                const SizedBox(width: 8),
+                                Expanded(child: Text(order.buyerPhone.isNotEmpty ? order.buyerPhone : 'No phone', style: GoogleFonts.inter(color: AppColors.textSecondary))),
+                              ],
+                            ),
+                            const SizedBox(height: 6),
+                            Row(
+                              children: [
+                                const Icon(Icons.email_outlined, size: 16, color: AppColors.textSecondary),
+                                const SizedBox(width: 8),
+                                Expanded(child: Text(order.buyerEmail.isNotEmpty ? order.buyerEmail : 'No email', style: GoogleFonts.inter(color: AppColors.textSecondary))),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Text('Ordered Items:', style: GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 13)),
+                      const SizedBox(height: 8),
+                      ...sellerItems.map((item) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 4.0),
+                          child: Row(
+                            children: [
+                              Text('${item['quantity']}x ', style: GoogleFonts.inter(fontWeight: FontWeight.bold)),
+                              Expanded(child: Text(item['productName'] ?? item['productTitle'] ?? 'Product', maxLines: 1, overflow: TextOverflow.ellipsis)),
+                              Text(CurrencyFormatter.format((item['price'] as num?)?.toDouble() ?? 0.0), style: GoogleFonts.inter(fontWeight: FontWeight.w600)),
+                            ],
+                          ),
+                        );
+                      }),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+      ],
     );
   }
 

@@ -9,7 +9,6 @@ import 'constants/app_constants.dart';
 import 'constants/app_colors.dart';
 import 'utils/app_routes.dart';
 import 'services/notification_service.dart';
-
 // Providers
 import 'providers/nav_provider.dart';
 import 'providers/auth_provider.dart';

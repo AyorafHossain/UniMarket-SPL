@@ -10,6 +10,8 @@ import 'edit_profile_screen.dart';
 import '../order/my_orders_screen.dart';
 import '../exchange/my_exchanges_screen.dart';
 import 'renter_dashboard_screen.dart';
+import '../order/my_orders_screen.dart';
+import '../exchange/my_exchanges_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -215,7 +217,7 @@ class ProfileScreen extends StatelessWidget {
                           ),
                         );
                       },
-                      icon: const Icon(Icons.swap_horiz_outlined, size: 18),
+                      icon: const Icon(Icons.autorenew_outlined, size: 18),
                       label: const Text('My Exchanges'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,

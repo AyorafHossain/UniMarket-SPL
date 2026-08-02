@@ -64,13 +64,14 @@ class ProductService {
   // Fetch all products ordered by creation date descending (newest first)
   Future<List<ProductModel>> getAllProducts() async {
     try {
-      debugPrint('Firestore Query: get -> /products (orderBy createdAt)');
-      final snapshot = await _productsCollection
-          .orderBy('createdAt', descending: true)
-          .get();
-      return snapshot.docs
+      debugPrint('Firestore Query: get -> /products');
+      final snapshot = await _productsCollection.get();
+      final products = snapshot.docs
           .map((doc) => ProductModel.fromMap(doc.data()))
+          .where((product) => product.approvalStatus == 'approved')
           .toList();
+      products.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      return products;
     } catch (e) {
       debugPrint('ProductService: getAllProducts error: $e');
       rethrow;
@@ -83,11 +84,13 @@ class ProductService {
       debugPrint('Firestore Query: get -> /products (where category=$category)');
       final snapshot = await _productsCollection
           .where('category', isEqualTo: category)
-          .orderBy('createdAt', descending: true)
           .get();
-      return snapshot.docs
+      final products = snapshot.docs
           .map((doc) => ProductModel.fromMap(doc.data()))
+          .where((product) => product.approvalStatus == 'approved')
           .toList();
+      products.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      return products;
     } catch (e) {
       debugPrint('ProductService: getProductsByCategory error: $e');
       rethrow;
@@ -164,16 +167,17 @@ class ProductService {
     debugPrint('User Email: ${user?.email}');
     debugPrint('User Email Verified: ${user?.emailVerified}');
     debugPrint('Collection: /products');
-    debugPrint('Filters: orderBy(createdAt, descending: true)');
     debugPrint('=============================');
     
     return _productsCollection
-        .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs
+      final products = snapshot.docs
           .map((doc) => ProductModel.fromMap(doc.data()))
+          .where((product) => product.approvalStatus == 'approved')
           .toList();
+      products.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      return products;
     });
   }
 

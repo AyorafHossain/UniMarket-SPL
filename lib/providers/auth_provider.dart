@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
@@ -41,27 +42,29 @@ class AuthProvider extends ChangeNotifier {
           return;
         }
         
-        // Ensure user document exists in Firestore
+        // Ensure user document exists in Firestore (create only if missing)
         try {
-          UserModel? existingUser = await _userService.getUserProfile(user.uid);
-          if (existingUser == null) {
+          final docRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
+          final docSnap = await docRef.get();
+          if (!docSnap.exists) {
             debugPrint('Firestore user doc does NOT exist. Creating one...');
-            UserModel newUser = UserModel(
-              id: user.uid,
-              name: user.displayName ?? user.email?.split('@')[0] ?? '',
-              email: user.email ?? '',
-              universityEmail: user.email ?? '',
-              profilePic: user.photoURL ?? '',
-              department: '',
-              phoneNumber: '',
-              university: 'NSTU',
-              role: 'student',
-              isEmailVerified: user.emailVerified,
-              createdAt: DateTime.now(),
-              lastLoginAt: DateTime.now(),
-              authProvider: 'firebase',
-            );
-            await _userService.createUserProfile(newUser);
+            // Use set() with merge:true so we never clobber existing fields
+            await docRef.set({
+              'id': user.uid,
+              'name': user.displayName ?? user.email?.split('@')[0] ?? '',
+              'email': user.email ?? '',
+              'universityEmail': user.email ?? '',
+              'profilePic': user.photoURL ?? '',
+              'department': '',
+              'phoneNumber': '',
+              'university': 'NSTU',
+              'role': 'student',
+              'isEmailVerified': user.emailVerified,
+              'createdAt': FieldValue.serverTimestamp(),
+              'lastLoginAt': FieldValue.serverTimestamp(),
+              'authProvider': 'firebase',
+              'isOnline': true,
+            }, SetOptions(merge: true));
             debugPrint('Created missing user document in Firestore.');
           } else {
             debugPrint('Firestore user doc exists for ${user.uid}');
@@ -158,41 +161,35 @@ class AuthProvider extends ChangeNotifier {
         
         // Ensure user document exists in Firestore
         try {
-          UserModel? existingUser = await _userService.getUserProfile(user.uid);
-          if (existingUser == null) {
-            UserModel newUser = UserModel(
-              id: user.uid,
-              name: user.displayName ?? 'Student',
-              email: user.email ?? formattedEmail,
-              universityEmail: user.email ?? formattedEmail,
-              university: 'NSTU',
-              role: 'student',
-              isEmailVerified: user.emailVerified,
-              lastLoginAt: DateTime.now(),
-              createdAt: DateTime.now(),
-              authProvider: 'email',
-            );
-            await _userService.createUserProfile(newUser);
+          final docRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
+          final docSnap = await docRef.get();
+          if (!docSnap.exists) {
+            // New user: create full document with merge:true
+            await docRef.set({
+              'id': user.uid,
+              'name': user.displayName ?? 'Student',
+              'email': user.email ?? formattedEmail,
+              'universityEmail': user.email ?? formattedEmail,
+              'university': 'NSTU',
+              'role': 'student',
+              'isEmailVerified': user.emailVerified,
+              'lastLoginAt': FieldValue.serverTimestamp(),
+              'createdAt': FieldValue.serverTimestamp(),
+              'authProvider': 'email',
+              'isOnline': true,
+              'department': '',
+              'phoneNumber': '',
+              'profilePic': '',
+            }, SetOptions(merge: true));
             debugPrint('Created missing user document in Firestore.');
           } else {
-            // Update lastLoginAt
-            UserModel updatedUser = UserModel(
-              id: existingUser.id,
-              name: existingUser.name,
-              email: existingUser.email,
-              universityEmail: existingUser.universityEmail,
-              department: existingUser.department,
-              phoneNumber: existingUser.phoneNumber,
-              profilePic: existingUser.profilePic,
-              isOnline: existingUser.isOnline,
-              createdAt: existingUser.createdAt,
-              authProvider: existingUser.authProvider,
-              lastLoginAt: DateTime.now(),
-              university: existingUser.university,
-              role: existingUser.role,
-              isEmailVerified: user.emailVerified,
-            );
-            await _userService.updateUserProfile(updatedUser);
+            // Existing user: ONLY update login-specific fields, never overwrite profile
+            await docRef.update({
+              'lastLoginAt': FieldValue.serverTimestamp(),
+              'isOnline': true,
+              'isEmailVerified': user.emailVerified,
+            });
+            debugPrint('Updated login fields for existing user ${user.uid}');
           }
         } catch (e) {
           debugPrint('Firestore profile sync failed during email login: $e');
@@ -236,41 +233,38 @@ class AuthProvider extends ChangeNotifier {
         }
         
         try {
-          UserModel? existingUser = await _userService.getUserProfile(user.uid);
-          
-          if (existingUser == null) {
-            UserModel newUser = UserModel(
-              id: user.uid,
-              name: user.displayName ?? 'New User',
-              email: user.email ?? '',
-              profilePic: user.photoURL ?? '',
-              createdAt: DateTime.now(),
-              authProvider: 'google',
-              lastLoginAt: DateTime.now(),
-              universityEmail: user.email ?? '',
-              university: 'NSTU',
-              role: 'student',
-              isEmailVerified: user.emailVerified,
-            );
-            await _userService.createUserProfile(newUser);
+          final docRef = FirebaseFirestore.instance.collection('users').doc(user.uid);
+          final docSnap = await docRef.get();
+
+          if (!docSnap.exists) {
+            // New Google user: create document with merge:true to be safe
+            await docRef.set({
+              'id': user.uid,
+              'name': user.displayName ?? 'New User',
+              // Use the Google/NSTU email as universityEmail only on first creation
+              'universityEmail': user.email ?? '',
+              'email': user.email ?? '',
+              'profilePic': user.photoURL ?? '',
+              'createdAt': FieldValue.serverTimestamp(),
+              'authProvider': 'google',
+              'lastLoginAt': FieldValue.serverTimestamp(),
+              'university': 'NSTU',
+              'role': 'student',
+              'isEmailVerified': user.emailVerified,
+              'isOnline': true,
+              'department': '',
+              'phoneNumber': '',
+            }, SetOptions(merge: true));
+            debugPrint('Created new Google user document in Firestore.');
           } else {
-            UserModel updatedUser = UserModel(
-              id: existingUser.id,
-              name: existingUser.name,
-              email: existingUser.email,
-              universityEmail: existingUser.universityEmail,
-              department: existingUser.department,
-              phoneNumber: existingUser.phoneNumber,
-              profilePic: existingUser.profilePic,
-              isOnline: existingUser.isOnline,
-              createdAt: existingUser.createdAt,
-              authProvider: existingUser.authProvider,
-              lastLoginAt: DateTime.now(),
-              university: existingUser.university,
-              role: existingUser.role,
-              isEmailVerified: user.emailVerified,
-            );
-            await _userService.updateUserProfile(updatedUser);
+            // Existing user: ONLY update login-specific fields
+            // Never overwrite universityEmail, role, department, createdAt, or profile fields
+            await docRef.update({
+              'lastLoginAt': FieldValue.serverTimestamp(),
+              'isOnline': true,
+              'isEmailVerified': user.emailVerified,
+            });
+            debugPrint('Updated login fields for existing Google user ${user.uid}');
           }
         } catch (e) {
           debugPrint('Firestore profile sync failed during Google login: $e');
