@@ -55,6 +55,13 @@ class UserModel {
 
   // Create from Map from Firebase
   factory UserModel.fromMap(Map<String, dynamic> map) {
+    DateTime? parseDate(dynamic value) {
+      if (value == null) return null;
+      if (value is Timestamp) return value.toDate();
+      if (value is String) return DateTime.tryParse(value);
+      return null;
+    }
+
     return UserModel(
       id: map['id'] ?? '',
       name: map['name'] ?? '',
@@ -64,13 +71,9 @@ class UserModel {
       phoneNumber: map['phoneNumber'] ?? '',
       profilePic: map['profilePic'] ?? '',
       isOnline: map['isOnline'] ?? false,
-      createdAt: map['createdAt'] is Timestamp 
-          ? (map['createdAt'] as Timestamp).toDate() 
-          : (map['createdAt'] != null ? DateTime.tryParse(map['createdAt'].toString()) : null),
+      createdAt: parseDate(map['createdAt']),
       authProvider: map['authProvider'] ?? 'email',
-      lastLoginAt: map['lastLoginAt'] is Timestamp 
-          ? (map['lastLoginAt'] as Timestamp).toDate() 
-          : (map['lastLoginAt'] != null ? DateTime.tryParse(map['lastLoginAt'].toString()) : null),
+      lastLoginAt: parseDate(map['lastLoginAt']),
       university: map['university'] ?? '',
       role: map['role'] ?? 'student',
       isEmailVerified: map['isEmailVerified'] ?? false,

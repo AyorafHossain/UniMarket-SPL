@@ -7,6 +7,8 @@ import '../../providers/auth_provider.dart';
 import '../../providers/user_provider.dart';
 import '../seller/seller_dashboard_screen.dart';
 import 'edit_profile_screen.dart';
+import '../order/my_orders_screen.dart';
+import '../exchange/my_exchanges_screen.dart';
 import 'renter_dashboard_screen.dart';
 import '../order/my_orders_screen.dart';
 import '../exchange/my_exchanges_screen.dart';

@@ -34,6 +34,10 @@ class ProductModel {
   // Admin field
   final String approvalStatus; // 'pending', 'approved', 'rejected'
 
+  // Admin approval fields
+  final String approvalStatus; // 'pending', 'approved', 'rejected'
+  final String? approvedBy;
+
   ProductModel({
     required this.productId,
     required this.sellerId,
@@ -58,6 +62,7 @@ class ProductModel {
     this.wantedItem = '',
     this.exchangeNotes = '',
     this.approvalStatus = 'pending',
+    this.approvedBy,
   });
 
   // Convert ProductModel to a Map for Firestore
@@ -87,6 +92,7 @@ class ProductModel {
       'wantedItem': wantedItem,
       'exchangeNotes': exchangeNotes,
       'approvalStatus': approvalStatus,
+      'approvedBy': approvedBy,
     };
   }
 
@@ -154,6 +160,7 @@ class ProductModel {
       wantedItem: map['wantedItem']?.toString() ?? '',
       exchangeNotes: map['exchangeNotes']?.toString() ?? '',
       approvalStatus: map['approvalStatus']?.toString() ?? 'pending',
+      approvedBy: map['approvedBy']?.toString(),
     );
   }
 
@@ -182,6 +189,7 @@ class ProductModel {
     String? wantedItem,
     String? exchangeNotes,
     String? approvalStatus,
+    String? approvedBy,
   }) {
     return ProductModel(
       productId: productId ?? this.productId,
@@ -207,6 +215,7 @@ class ProductModel {
       wantedItem: wantedItem ?? this.wantedItem,
       exchangeNotes: exchangeNotes ?? this.exchangeNotes,
       approvalStatus: approvalStatus ?? this.approvalStatus,
+      approvedBy: approvedBy ?? this.approvedBy,
     );
   }
 

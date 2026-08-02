@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
   
 
   final double _currentMinPrice = 0;
-  final double _currentMaxPrice = 50000;
+  final double _currentMaxPrice = 10000000; // Increased max price to allow expensive items like laptops
   final String _selectedCondition = 'All';
   // Condition options
   
@@ -107,7 +107,8 @@ class _HomeScreenState extends State<HomeScreen> {
           product.category.toLowerCase().contains(_searchQuery.toLowerCase());
       final matchesPrice = product.price >= _currentMinPrice && product.price <= _currentMaxPrice;
       final matchesCondition = _selectedCondition == 'All' || product.condition == _selectedCondition;
-      return matchesCategory && matchesSearch && matchesPrice && matchesCondition;
+      final isApproved = product.approvalStatus == 'approved';
+      return matchesCategory && matchesSearch && matchesPrice && matchesCondition && isApproved;
     }).toList();
   }
 
@@ -116,6 +117,7 @@ class _HomeScreenState extends State<HomeScreen> {
     // unless search is active.
     return _products.where((product) {
       if (!product.isFeatured) return false;
+      if (product.approvalStatus != 'approved') return false;
       return _selectedCategory == 'All' || 
           (_selectedCategory == 'Exchange' ? product.listingType == 'exchange' : product.category == _selectedCategory);
     }).toList();
