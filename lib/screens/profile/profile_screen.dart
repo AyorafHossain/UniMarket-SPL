@@ -8,6 +8,8 @@ import '../../providers/user_provider.dart';
 import '../seller/seller_dashboard_screen.dart';
 import 'edit_profile_screen.dart';
 import 'renter_dashboard_screen.dart';
+import '../order/my_orders_screen.dart';
+import '../exchange/my_exchanges_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -161,6 +163,60 @@ class ProfileScreen extends StatelessWidget {
                       },
                       icon: const Icon(Icons.calendar_month_outlined, size: 18),
                       label: const Text('My Rentals'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        minimumSize: const Size(double.infinity, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 0,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  
+                  // My Orders Button
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const MyOrdersScreen(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.shopping_bag_outlined, size: 18),
+                      label: const Text('My Orders'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.secondary,
+                        foregroundColor: Colors.white,
+                        minimumSize: const Size(double.infinity, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        elevation: 0,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  
+                  // My Exchanges Button
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const MyExchangesScreen(),
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.autorenew_outlined, size: 18),
+                      label: const Text('My Exchanges'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.primary,
                         foregroundColor: Colors.white,

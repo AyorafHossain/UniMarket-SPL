@@ -30,6 +30,9 @@ class ProductModel {
   // Exchange fields
   final String wantedItem;
   final String exchangeNotes;
+  
+  // Admin field
+  final String approvalStatus; // 'pending', 'approved', 'rejected'
 
   ProductModel({
     required this.productId,
@@ -54,6 +57,7 @@ class ProductModel {
     this.rentStatus = 'available',
     this.wantedItem = '',
     this.exchangeNotes = '',
+    this.approvalStatus = 'pending',
   });
 
   // Convert ProductModel to a Map for Firestore
@@ -82,6 +86,7 @@ class ProductModel {
       'rentStatus': rentStatus,
       'wantedItem': wantedItem,
       'exchangeNotes': exchangeNotes,
+      'approvalStatus': approvalStatus,
     };
   }
 
@@ -148,6 +153,7 @@ class ProductModel {
       rentStatus: map['rentStatus']?.toString() ?? 'available',
       wantedItem: map['wantedItem']?.toString() ?? '',
       exchangeNotes: map['exchangeNotes']?.toString() ?? '',
+      approvalStatus: map['approvalStatus']?.toString() ?? 'pending',
     );
   }
 
@@ -175,6 +181,7 @@ class ProductModel {
     String? rentStatus,
     String? wantedItem,
     String? exchangeNotes,
+    String? approvalStatus,
   }) {
     return ProductModel(
       productId: productId ?? this.productId,
@@ -199,6 +206,7 @@ class ProductModel {
       rentStatus: rentStatus ?? this.rentStatus,
       wantedItem: wantedItem ?? this.wantedItem,
       exchangeNotes: exchangeNotes ?? this.exchangeNotes,
+      approvalStatus: approvalStatus ?? this.approvalStatus,
     );
   }
 

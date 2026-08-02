@@ -189,6 +189,7 @@ class _SellScreenState extends State<SellScreen> {
             : 0.0,
         wantedItem: _listingType == 'Exchange Only' ? _wantedItemController.text.trim() : '',
         exchangeNotes: _listingType == 'Exchange Only' ? _exchangeNotesController.text.trim() : '',
+        approvalStatus: 'pending',
       );
 
       await _productService.createProduct(newProduct);

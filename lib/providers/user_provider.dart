@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../models/user_model.dart';
@@ -86,7 +87,7 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  // Update profile details
+  // Update profile details (only safe profile fields, never touches role/createdAt/universityEmail)
   Future<bool> updateProfile({
     required String name,
     required String department,
@@ -107,7 +108,20 @@ class UserProvider extends ChangeNotifier {
         profilePicUrl = await _userService.uploadProfileImage(imageFile, _userProfile!.id);
       }
 
-      UserModel updatedProfile = UserModel(
+      // ONLY update profile-specific fields — never role, createdAt, universityEmail (unless explicitly changed)
+      await FirebaseFirestore.instance.collection('users').doc(_userProfile!.id).update({
+        'name': name,
+        'department': department,
+        'phoneNumber': phoneNumber,
+        'universityEmail': universityEmail,
+        'profilePic': profilePicUrl,
+      });
+
+      // Also update display name in Firebase Auth
+      await _auth.currentUser?.updateDisplayName(name);
+
+      // Reflect changes locally
+      _userProfile = UserModel(
         id: _userProfile!.id,
         name: name,
         email: _userProfile!.email,
@@ -115,14 +129,15 @@ class UserProvider extends ChangeNotifier {
         department: department,
         phoneNumber: phoneNumber,
         profilePic: profilePicUrl,
+        university: _userProfile!.university,
+        role: _userProfile!.role,
+        createdAt: _userProfile!.createdAt,
+        lastLoginAt: _userProfile!.lastLoginAt,
+        authProvider: _userProfile!.authProvider,
+        isEmailVerified: _userProfile!.isEmailVerified,
+        isOnline: _userProfile!.isOnline,
       );
 
-      await _userService.updateUserProfile(updatedProfile);
-      
-      // Also update display name in Firebase Auth
-      await _auth.currentUser?.updateDisplayName(name);
-      
-      _userProfile = updatedProfile;
       _setLoading(false);
       return true;
     } catch (e) {
